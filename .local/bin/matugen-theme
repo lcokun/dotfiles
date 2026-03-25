@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+# Usage:
+#   matugen-theme image <path> [matugen-opts]
+#   matugen-theme color <hex> [matugen-opts]
+
+set -e
+
+if [[ $# -lt 2 ]]; then
+    echo "Usage: matugen-theme image <path> [matugen-opts]"
+    echo "       matugen-theme color <hex> [matugen-opts]"
+    exit 1
+fi
+
+TYPE=$1
+INPUT=$2
+shift 2
+
+THEME_DIR="$HOME/.config/omarchy/themes/matugen"
+CURRENT_DIR="$HOME/.config/omarchy/current"
+
+# Generate color scheme files via matugen
+case "$TYPE" in
+    image)
+        matugen image "$INPUT" "$@"
+        # Update wallpaper
+        ln -nsf "$(realpath "$INPUT")" "$CURRENT_DIR/background"
+        pkill -x swaybg || true
+        setsid uwsm-app -- swaybg -i "$CURRENT_DIR/background" -m fill >/dev/null 2>&1 &
+        ;;
+    color)
+        matugen color hex "$INPUT" "$@"
+        ;;
+    *)
+        echo "Unknown type '$TYPE'. Use 'image' or 'color'."
+        exit 1
+        ;;
+esac
+
+# Copy generated theme files to current
+cp -r "$THEME_DIR/"* "$CURRENT_DIR/theme/"
+echo "matugen" > "$CURRENT_DIR/theme.name"
+
+# Reload components
+hyprctl reload >/dev/null
+makoctl reload
+pkill -SIGUSR2 btop 2>/dev/null || true
+killall -SIGUSR2 ghostty 2>/dev/null || true
+killall -SIGUSR1 kitty 2>/dev/null || true
+[[ -f "$HOME/.config/alacritty/alacritty.toml" ]] && touch "$HOME/.config/alacritty/alacritty.toml"
+pkill -x waybar 2>/dev/null || true; setsid uwsm-app -- waybar >/dev/null 2>&1 &
+pkill -x swayosd-server 2>/dev/null || true; setsid uwsm-app -- swayosd-server >/dev/null 2>&1 &

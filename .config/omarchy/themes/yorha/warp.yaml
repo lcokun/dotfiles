@@ -1,0 +1,26 @@
+name: YoRHa
+accent: "#cd664d"
+cursor: "#cd664d"
+background: "#1e1c18"
+foreground: "#c2bda6"
+details: darker
+
+terminal_colors:
+  normal:
+    black:   "#1e1c18"
+    red:     "#b04040"
+    green:   "#a0c490"
+    yellow:  "#c8a96e"
+    blue:    "#8ba8aa"
+    magenta: "#b3ac92"
+    cyan:    "#9dbcb0"
+    white:   "#c2bda6"
+  bright:
+    black:   "#8a8070"
+    red:     "#cd664d"
+    green:   "#b8d4aa"
+    yellow:  "#e8c89a"
+    blue:    "#78bcd0"
+    magenta: "#c89ab4"
+    cyan:    "#90c8c0"
+    white:   "#f4f0e1"

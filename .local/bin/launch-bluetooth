@@ -1,0 +1,9 @@
+#!/bin/bash
+rfkill unblock bluetooth
+APP_ID="org.omarchy.bluetui"
+WINDOW_ADDRESS=$(hyprctl clients -j | jq -r --arg p "bluetui" '.[]|select((.class|test("\\b" + $p + "\\b";"i")) or (.title|test("\\b" + $p + "\\b";"i")))|.address' | head -n1)
+if [[ -n $WINDOW_ADDRESS ]]; then
+  hyprctl dispatch focuswindow "address:$WINDOW_ADDRESS"
+else
+  exec setsid uwsm-app -- xdg-terminal-exec --app-id="$APP_ID" -e bluetui
+fi

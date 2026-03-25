@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# Advance to next wallpaper in the collection and regenerate the palette.
+# Set MATUGEN_WALLS_DIR to override the default collection path.
+# Set MATUGEN_COLOR_INDEX to override which dominant color is picked (default 0).
+
+set -e
+
+WALLS_DIR="${MATUGEN_WALLS_DIR:-$HOME/Pictures/walls/dark}"
+COLOR_INDEX="${MATUGEN_COLOR_INDEX:-0}"
+CURRENT_LINK="$HOME/.config/omarchy/current/background"
+
+# Collect wallpapers sorted
+mapfile -d '' -t WALLS < <(find -L "$WALLS_DIR" -maxdepth 1 -type f \( -name "*.jpg" -o -name "*.jpeg" -o -name "*.png" \) -print0 | sort -z)
+
+TOTAL=${#WALLS[@]}
+if (( TOTAL == 0 )); then
+    echo "No wallpapers found in $WALLS_DIR"
+    exit 1
+fi
+
+# Find current index
+CURRENT=""
+[[ -L "$CURRENT_LINK" ]] && CURRENT=$(readlink -f "$CURRENT_LINK")
+
+INDEX=-1
+for i in "${!WALLS[@]}"; do
+    if [[ "${WALLS[$i]}" == "$CURRENT" ]]; then
+        INDEX=$i
+        break
+    fi
+done
+
+if (( INDEX == -1 )); then
+    NEXT="${WALLS[0]}"
+else
+    NEXT="${WALLS[$(( (INDEX + 1) % TOTAL ))]}"
+fi
+
+matugen-theme image "$NEXT" --source-color-index "$COLOR_INDEX"

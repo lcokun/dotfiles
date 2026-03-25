@@ -1,0 +1,62 @@
+# YoRHa
+# NieR: Automata inspired theme
+# Inspired by https://github.com/flickowoa/dotfiles/tree/hyprland-yorha
+
+# Code syntax highlight theme
+code_syntax_highlight = "gruvbox"
+
+# ========= Border =========
+file_panel_border = "#4a4830"
+sidebar_border = "#1a1814"
+footer_border = "#4a4830"
+
+# ========= Border Active =========
+file_panel_border_active = "#ccc89a"
+sidebar_border_active = "#8a9a48"
+footer_border_active = "#8a9a48"
+modal_border_active = "#4a4830"
+
+# ========= Background (bg) =========
+full_screen_bg = "#1a1814"
+file_panel_bg = "#1a1814"
+sidebar_bg = "#1a1814"
+footer_bg = "#1a1814"
+modal_bg = "#1a1814"
+
+# ========= Foreground (fg) =========
+full_screen_fg = "#bab896"
+file_panel_fg = "#bab896"
+sidebar_fg = "#bab896"
+footer_fg = "#bab896"
+modal_fg = "#bab896"
+
+# ========= Special Color =========
+cursor = "#88a880"
+correct = "#8a9a48"
+error = "#7a5040"
+hint = "#587060"
+cancel = "#4a4830"
+gradient_color = ["#8a9a48", "#988050"]
+
+# ========= File Panel Special Items =========
+file_panel_top_directory_icon = "#8a9a48"
+file_panel_top_path = "#587060"
+file_panel_item_selected_fg = "#8a9a48"
+file_panel_item_selected_bg = "#1a1814"
+
+# ========= Sidebar Special Items =========
+sidebar_title = "#7a5040"
+sidebar_item_selected_fg = "#8a9a48"
+sidebar_item_selected_bg = "#1a1814"
+sidebar_divider = "#4a4830"
+
+# ========= Modal Special Items =========
+modal_cancel_fg = "#bab896"
+modal_cancel_bg = "#4a4830"
+
+modal_confirm_fg = "#bab896"
+modal_confirm_bg = "#8a9a48"
+
+# ========= Help Menu =========
+help_menu_hotkey = "#8a9a48"
+help_menu_title = "#988050"

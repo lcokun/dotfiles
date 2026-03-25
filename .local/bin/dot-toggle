@@ -1,0 +1,10 @@
+#!/bin/bash
+CURRENT=$(grep '^DNSOverTLS=' /etc/systemd/resolved.conf | cut -d= -f2)
+if [[ "$CURRENT" == "yes" ]]; then
+    sudo /usr/local/bin/dot-toggle-priv opportunistic
+    notify-send -u normal "DNS-over-TLS" "OFF — captive portals will work"
+else
+    sudo /usr/local/bin/dot-toggle-priv yes
+    notify-send -u normal "DNS-over-TLS" "ON — strict mode"
+fi
+pkill -RTMIN+11 waybar

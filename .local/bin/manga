@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+WORKSTATION="adminmel@100.96.57.93"
+TUNNEL_LOCAL_PORT=5038
+TUNNEL_REMOTE_PORT=5037
+SCRCPY_REVERSE_PORT=27183
+
+# Start adb on workstation
+echo "Starting adb on workstation..."
+ssh "$WORKSTATION" "sudo adb start-server && adb devices" || {
+    echo "ERROR: Could not start adb on workstation"
+    exit 1
+}
+
+# Start SSH tunnel in background
+echo "Opening tunnel to workstation..."
+ssh -CN \
+    -L${TUNNEL_LOCAL_PORT}:localhost:${TUNNEL_REMOTE_PORT} \
+    -R${SCRCPY_REVERSE_PORT}:localhost:${SCRCPY_REVERSE_PORT} \
+    "$WORKSTATION" &
+TUNNEL_PID=$!
+
+# Wait for tunnel port to be ready
+echo "Waiting for tunnel..."
+for i in $(seq 1 15); do
+    if bash -c "echo > /dev/tcp/localhost/${TUNNEL_LOCAL_PORT}" 2>/dev/null; then
+        break
+    fi
+    if ! kill -0 "$TUNNEL_PID" 2>/dev/null; then
+        echo "ERROR: SSH tunnel failed to start"
+        exit 1
+    fi
+    sleep 1
+done
+
+echo "Tunnel up. Launching scrcpy..."
+
+# Launch scrcpy
+ADB_SERVER_SOCKET=tcp:localhost:${TUNNEL_LOCAL_PORT} \
+    scrcpy --video-codec=h265 --max-size=0 --video-bit-rate=8M --screen-off-timeout=3600 --disable-screensaver
+
+# Cleanup tunnel when scrcpy exits
+echo "Closing tunnel..."
+kill "$TUNNEL_PID" 2>/dev/null
+wait "$TUNNEL_PID" 2>/dev/null

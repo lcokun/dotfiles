@@ -1,0 +1,7 @@
+#!/bin/bash
+CURRENT=$(grep '^DNSOverTLS=' /etc/systemd/resolved.conf | cut -d= -f2)
+if [[ "$CURRENT" == "yes" ]]; then
+    echo '{"text": "󰌾", "class": "active", "tooltip": "DNS-over-TLS: ON"}'
+else
+    echo '{"text": "󰌿", "class": "inactive", "tooltip": "DNS-over-TLS: OFF\nCaptive portals will work"}'
+fi
