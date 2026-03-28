@@ -1,0 +1,286 @@
+#!/bin/bash
+
+# ── helpers ──────────────────────────────────────────────────────────────────
+
+BACK_TO_EXIT=false
+
+back_to() {
+  if [[ $BACK_TO_EXIT == true ]]; then exit 0
+  elif [[ -n $1 ]]; then "$1"
+  else show_main_menu
+  fi
+}
+
+toggle_existing_menu() {
+  if pgrep -f "walker.*--dmenu" >/dev/null; then
+    walker --close >/dev/null 2>&1
+    exit 0
+  fi
+}
+
+menu() {
+  local prompt="$1" options="$2"
+  shift 2
+  echo -e "$options" | walker --dmenu --width 295 --minheight 1 --maxheight 630 -p "$prompt…" "$@" 2>/dev/null
+}
+
+open_url() { setsid xdg-open "$1" >/dev/null 2>&1 & }
+
+run_in_terminal() {
+  setsid xdg-terminal-exec bash -c "$1; echo; read -rp 'Press Enter to close'" >/dev/null 2>&1 &
+}
+
+close_windows() {
+  hyprctl clients -j | jq -r '.[].address' | xargs -I{} hyprctl dispatch closewindow address:{}
+  sleep 1
+}
+
+restart_app() {
+  pkill -x "$1" 2>/dev/null || true
+  setsid uwsm-app -- "$@" >/dev/null 2>&1 &
+}
+
+hibernate_available() {
+  [[ -f /sys/power/image_size ]] || return 1
+  local swapsize_kb
+  swapsize_kb=$(awk '!/Filename|zram/ {sum += $3} END {print sum+0}' /proc/swaps)
+  (( swapsize_kb * 1024 > $(cat /sys/power/image_size) ))
+}
+
+# ── learn ─────────────────────────────────────────────────────────────────────
+
+show_learn_menu() {
+  case $(menu "Learn" "󰌌  Keybindings\n󱢥  Hyprland\n󰣇  Arch\n󰀛  Neovim\n󱆃  Fish") in
+  *Keybindings*) keybindings-viewer ;;
+  *Hyprland*)    open_url "https://wiki.hypr.land/" ;;
+  *Arch*)        open_url "https://wiki.archlinux.org/" ;;
+  *Neovim*)      open_url "https://www.lazyvim.org/keymaps" ;;
+  *Fish*)        open_url "https://fishshell.com/docs/current/" ;;
+  *)             show_main_menu ;;
+  esac
+}
+
+# ── trigger ───────────────────────────────────────────────────────────────────
+
+show_trigger_menu() {
+  case $(menu "Trigger" "󰄀  Capture\n󰒢  Share\n󰔎  Toggle") in
+  *Capture*)  show_capture_menu ;;
+  *Share*)    show_share_menu ;;
+  *Toggle*)   show_toggle_menu ;;
+  *)          show_main_menu ;;
+  esac
+}
+
+show_capture_menu() {
+  case $(menu "Capture" "  Screenshot\n  Screenrecord\n󰃉  Color") in
+  *Screenshot*)   screenshot ;;
+  *Screenrecord*) show_screenrecord_menu ;;
+  *Color*)        pkill hyprpicker || hyprpicker -a ;;
+  *)              back_to show_trigger_menu ;;
+  esac
+}
+
+get_webcam_list() {
+  v4l2-ctl --list-devices 2>/dev/null | while IFS= read -r line; do
+    if [[ $line != $'\t'* && -n $line ]]; then
+      local name="$line"
+      IFS= read -r device || break
+      device=$(echo "$device" | tr -d '\t' | head -1)
+      [[ -n $device ]] && echo "$device  $name"
+    fi
+  done
+}
+
+show_webcam_select_menu() {
+  local devices count
+  devices=$(get_webcam_list)
+  count=$(echo "$devices" | grep -c . 2>/dev/null || echo 0)
+  if [[ -z $devices ]] || (( count == 0 )); then
+    notify-send "No webcam devices found" -u critical -t 3000
+    return 1
+  fi
+  if (( count == 1 )); then
+    echo "$devices" | awk '{print $1}'
+  else
+    menu "Select Webcam" "$devices" | awk '{print $1}'
+  fi
+}
+
+show_screenrecord_menu() {
+  screenrecord --stop-recording && exit 0
+  case $(menu "Screenrecord" "  With no audio\n  With desktop audio\n  With desktop + microphone audio\n  With desktop + microphone audio + webcam") in
+  *"With no audio")                          screenrecord ;;
+  *"With desktop audio")                     screenrecord --with-desktop-audio ;;
+  *"With desktop + microphone audio")        screenrecord --with-desktop-audio --with-microphone-audio ;;
+  *"With desktop + microphone audio + webcam")
+    local device
+    device=$(show_webcam_select_menu) || { back_to show_capture_menu; return; }
+    screenrecord --with-desktop-audio --with-microphone-audio --with-webcam --webcam-device="$device"
+    ;;
+  *) back_to show_capture_menu ;;
+  esac
+}
+
+show_share_menu() {
+  case $(menu "Share" "  Clipboard\n  File\n  Folder") in
+  *Clipboard*) share clipboard ;;
+  *File*)      xdg-terminal-exec bash -c "share file" ;;
+  *Folder*)    xdg-terminal-exec bash -c "share folder" ;;
+  *)           back_to show_trigger_menu ;;
+  esac
+}
+
+show_toggle_menu() {
+  case $(menu "Toggle" "󱄄  Screensaver\n󰔎  Nightlight\n󱫖  Idle Lock\n󰍜  Top Bar\n󱂬  Workspace Layout\n  Window Gaps\n  1-Window Ratio\n󰍹  Display Scaling") in
+  *Screensaver*)       toggle_screensaver ;;
+  *Nightlight*)        toggle_nightlight ;;
+  *"Idle Lock"*)       toggle-idle ;;
+  *"Top Bar"*)         toggle_waybar ;;
+  *Layout*)            toggle-workspace-layout ;;
+  *Ratio*)             toggle-window-aspect ;;
+  *Gaps*)              toggle-gaps ;;
+  *Scaling*)           cycle-display-scale ;;
+  *)                   back_to show_trigger_menu ;;
+  esac
+}
+
+toggle_screensaver() {
+  local state_file=~/.local/state/omarchy/toggles/screensaver-off
+  if [[ -f $state_file ]]; then
+    rm -f "$state_file"
+    notify-send "󱄄  Screensaver enabled"
+  else
+    mkdir -p "$(dirname "$state_file")"
+    touch "$state_file"
+    notify-send "󱄄  Screensaver disabled"
+  fi
+}
+
+toggle_nightlight() {
+  local on_temp=4000 off_temp=6000
+  if ! pgrep -x hyprsunset >/dev/null; then
+    setsid uwsm-app -- hyprsunset &
+    sleep 1
+  fi
+  local current_temp
+  current_temp=$(hyprctl hyprsunset temperature 2>/dev/null | grep -oE '[0-9]+')
+  if [[ $current_temp == "$off_temp" ]]; then
+    hyprctl hyprsunset temperature $on_temp
+    notify-send "  Nightlight screen temperature"
+  else
+    hyprctl hyprsunset temperature $off_temp
+    notify-send "   Daylight screen temperature"
+  fi
+}
+
+toggle_waybar() {
+  if pgrep -x waybar >/dev/null; then
+    pkill -x waybar
+  else
+    setsid uwsm-app -- waybar >/dev/null 2>&1 &
+  fi
+}
+
+
+# ── update ────────────────────────────────────────────────────────────────────
+
+show_update_menu() {
+  case $(menu "Update" "󰏖  System Update\n󰑓  Process\n󰇅  Hardware\n󰾲  Firmware\n󰙐  Timezone\n󰅐  Time\n󰌋  Password") in
+  *"System Update"*) run_in_terminal "system-update" ;;
+  *Process*)         show_update_process_menu ;;
+  *Hardware*)        show_update_hardware_menu ;;
+  *Firmware*)        run_in_terminal "fwupdmgr refresh --force && sudo fwupdmgr update" ;;
+  *Timezone*)        run_in_terminal "timezone=\$(timedatectl list-timezones | gum filter --height 20 --header 'Set timezone') && sudo timedatectl set-timezone \"\$timezone\" && echo \"Timezone set to \$timezone\"" ;;
+  *Time*)            run_in_terminal "sudo systemctl restart systemd-timesyncd && echo 'Clock synced'" ;;
+  *Password*)        show_update_password_menu ;;
+  *)                 show_main_menu ;;
+  esac
+}
+
+show_update_process_menu() {
+  case $(menu "Restart" "  Hypridle\n  Hyprsunset\n  Swayosd\n󰌧  Walker\n󰍜  Waybar") in
+  *Hypridle*)  restart_app hypridle ;;
+  *Hyprsunset*) restart_app hyprsunset ;;
+  *Swayosd*)   restart_app swayosd-server ;;
+  *Walker*)    restart-walker ;;
+  *Waybar*)    restart_app waybar ;;
+  *)           back_to show_update_menu ;;
+  esac
+}
+
+show_update_hardware_menu() {
+  case $(menu "Restart" "  Audio\n󱚾  Wi-Fi\n󰂯  Bluetooth") in
+  *Audio*)     run_in_terminal "systemctl --user restart pipewire pipewire-pulse wireplumber && echo 'Audio restarted'" ;;
+  *"Wi-Fi"*)   run_in_terminal "sudo systemctl restart iwd && echo 'Wi-Fi restarted'" ;;
+  *Bluetooth*) run_in_terminal "sudo systemctl restart bluetooth && echo 'Bluetooth restarted'" ;;
+  *)           back_to show_update_menu ;;
+  esac
+}
+
+show_update_password_menu() {
+  case $(menu "Password" "  Drive Encryption\n  User") in
+  *Drive*)
+    local dev
+    dev=$(lsblk -rno NAME,PKNAME,TYPE | awk '$3 == "crypt" {print "/dev/"$2}' | head -1)
+    run_in_terminal "sudo cryptsetup luksChangeKey $dev"
+    ;;
+  *User*) run_in_terminal "passwd" ;;
+  *)      back_to show_update_menu ;;
+  esac
+}
+
+# ── system ────────────────────────────────────────────────────────────────────
+
+show_system_menu() {
+  local options="󱄄  Screensaver\n󰌾  Lock\n󰒲  Suspend"
+  hibernate_available && options="$options\n󰤁  Hibernate"
+  options="$options\n󰍃  Logout\n󰜉  Restart\n󰐥  Shutdown"
+
+  case $(menu "System" "$options") in
+  *Screensaver*) setsid uwsm-app -- screensaver force >/dev/null 2>&1 & ;;
+  *Lock*)        lock-screen ;;
+  *Suspend*)     systemctl suspend ;;
+  *Hibernate*)   systemctl hibernate ;;
+  *Logout*)
+    close_windows
+    nohup bash -c "sleep 2 && uwsm stop" >/dev/null 2>&1 &
+    ;;
+  *Restart*)
+    close_windows
+    nohup bash -c "sleep 2 && systemctl reboot --no-wall" >/dev/null 2>&1 &
+    ;;
+  *Shutdown*)
+    close_windows
+    nohup bash -c "sleep 2 && systemctl poweroff --no-wall" >/dev/null 2>&1 &
+    ;;
+  *) show_main_menu ;;
+  esac
+}
+
+# ── main ──────────────────────────────────────────────────────────────────────
+
+show_main_menu() {
+  go_to_menu "$(menu "Menu" "󰧑  Learn\n󱓞  Trigger\n󰁾  Update\n󰐥  System")"
+}
+
+go_to_menu() {
+  case "${1,,}" in
+  *learn*)       show_learn_menu ;;
+  *trigger*)     show_trigger_menu ;;
+  *toggle*)      show_toggle_menu ;;
+  *share*)       show_share_menu ;;
+  *capture*)     show_capture_menu ;;
+  *screenrecord*) show_screenrecord_menu ;;
+  *update*)      show_update_menu ;;
+  *system*)      show_system_menu ;;
+  esac
+}
+
+toggle_existing_menu
+
+if [[ -n $1 ]]; then
+  BACK_TO_EXIT=true
+  go_to_menu "$1"
+else
+  show_main_menu
+fi

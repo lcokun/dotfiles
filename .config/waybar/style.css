@@ -1,33 +1,32 @@
 @import "../omarchy/current/theme/waybar.css";
-@define-color bg @background;
-@define-color border alpha(@foreground, 0.25);
+
+/* Color aliases — bg uses alpha for glassmorphism (blur provided by Hyprland layerrule) */
+@define-color bg alpha(@background, 0.6);
+@define-color surface alpha(@surface_container, 0.45);
+@define-color border alpha(@foreground, 0.1);
 @define-color fg @foreground;
-@define-color fg2 alpha(@foreground, 0.85);
-@define-color ia1 #111111;
+@define-color fg2 alpha(@foreground, 0.75);
+@define-color accent @primary;
 
 * {
-
-  border: 0px;
-  font-family: 'JetBrainsMono Nerd Font Propo';
+  border: none;
+  font-family: 'Rubik', 'CaskaydiaMono Nerd Font', 'Material Symbols Rounded';
   font-size: 12px;
-  font-weight: bold;
+  font-weight: 500;
   min-height: 0;
-  }
+}
 
-
-/* --- Waybar ---*/
+/* --- Bar --- */
 window#waybar {
- background-color: transparent;
+  background-color: transparent;
 }
 
 #waybar > box {
-  border-radius: 2px;
-  margin: 0px 2px 3px 2px;
   background-color: @bg;
-  box-shadow: 1px 1px 2px 0px #101010;
-  transition-property: background-color;
-  transition-duration: .5s;
-  min-height: 0px;
+  border-radius: 14px;
+  margin: 6px 8px 0 8px;
+  padding: 2px;
+  min-height: 0;
 }
 
 window#waybar.hidden {
@@ -38,97 +37,64 @@ window#waybar.empty #window {
   background-color: transparent;
 }
 
-/* --- Modules --- */
-
-#left1 {
-  color: @fg2;
-  border-radius: 2px;
-  border: 1px solid @border;
-  padding: 0 8px;
-  margin: 2px 0px;
-  margin-left: 4px;
- }
-
- #left3 {
-  color: @fg2;
-  border: 1px solid @border;
-  border-radius: 2px;
-  padding: 0px;
-  margin: 2px 0px;
- }
-
-.modules-center {
-  color: @fg2;
-  border-radius: 2px;
-  border: 1px solid @border;
-  padding: 0px;
-  margin: 2px 0px;
-  margin-left: 4px;
-}
-#right {
-  color: @fg2;
-  border: 1px solid @border;
-  border-radius: 2px;
-  padding: 0px;
-  margin: 2px 4px;
-  margin-right: 4px;
-}
-
+/* --- Module Group Pills --- */
+#left1,
+#left2,
+#left3,
+#left4,
+.modules-center,
+#right,
 #right1 {
   color: @fg2;
+  background-color: @surface;
+  border-radius: 10px;
   border: 1px solid @border;
-  border-radius: 2px;
-  padding: 0px;
-  margin: 2px 0px;
+  padding: 0 4px;
+  margin: 3px;
 }
 
 /* --- Workspaces --- */
 #workspaces {
-margin: 2px;
-padding: 0px;
+  margin: 0;
+  padding: 0;
 }
 
 #workspaces button {
   all: initial;
   color: @fg;
-  background-color: @bg;
-  padding: 0 5px;
-  margin: 0px 2px;
-  border-radius: 2px;
-  border: 1.5px dashed @border;
-  opacity: 0.55;
+  padding: 2px 6px;
+  margin: 0 1px;
+  border-radius: 8px;
+  opacity: 0.3;
+  font-family: 'CaskaydiaMono Nerd Font';
+  font-size: 12px;
+  font-weight: 500;
 }
+
 #workspaces button.active {
-  background: @bg;
-  color: @fg;
+  color: @accent;
+  background-color: alpha(@accent, 0.15);
   opacity: 1;
 }
 
 #workspaces button.empty {
-  color: @fg;
-  background: @bg;
-  opacity: 0.35;
+  opacity: 0.2;
 }
 
 #workspaces button.empty.active {
-  color: @fg;
+  color: @accent;
   background-color: transparent;
   opacity: 1;
 }
 
 #workspaces button:hover {
-    background-color: transparent;
-    color: @fg;
-    opacity: 1;
+  background-color: @surface;
+  color: @fg;
+  opacity: 1;
 }
 
-
 /* --- General Modules --- */
-
 #power-profiles-daemon,
-#power-profiles-daemon.performance,
-#power-profiles-daemon.balanced,
-#power-profiles-daemon.power-saver,
 #cava,
 #mpris,
 #tray,
@@ -142,13 +108,10 @@ padding: 0px;
 #bluetooth,
 #pulseaudio,
 #custom-update,
-
 #clock {
   min-width: 14px;
-  padding-left: 3px;
-  padding-right: 3px;
-  margin: 0 2px 0 2px;
-  
+  padding: 0 5px;
+  margin: 0 2px;
 }
 
 #custom-expand-icon2,
@@ -159,8 +122,7 @@ padding: 0px;
   padding: 0 5px;
 }
 
-
-/* --- Module Hover color --- */
+/* --- Hover --- */
 #clock:hover,
 #cpu:hover,
 #memory:hover,
@@ -172,64 +134,39 @@ padding: 0px;
 #custom-omarchy:hover,
 #custom-update:hover,
 #idle_inhibitor:hover,
-
 #custom-updatespacman:hover,
 #network:hover,
 #pulseaudio:hover {
-  color: @fg;
-  background-color: transparent;
+  color: @accent;
 }
 
-
+/* --- Tooltip --- */
 tooltip {
-  padding: 2px;
+  padding: 6px;
+  background: @bg;
+  border: 1px solid @border;
+  border-radius: 10px;
+  font-size: 11px;
 }
 
-tooltip {
- padding: 4px;
- background: @bg;
- font-size: 10px;
- border: 0.5px solid alpha(@fg, 0.8);
- border-radius: 2px;
-}
 tooltip label {
-    color: @fg;
-    font-weight: normal;
+  color: @fg;
+  font-weight: normal;
 }
 
-#custom-voxtype {
-  min-width: 12px;
-  margin: 0 0 0 2.5px;
-}
-
-#custom-voxtype.recording {
-  color: #a55555;
-}
-
-
-/* Specific Module */
-
-.hidden {
-  opacity: 0;
-}
-
+/* --- Media Player --- */
 #mpris {
-color: @fg2;
-animation: repeat;
-	animation-name: blink;
-	animation-duration: 3s;
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
-    animation-direction: alternate;
+  color: @fg2;
+  animation: mpris-fade 3s linear infinite alternate;
 }
 
-@keyframes blink {
-    to {
-        color: #4a4a4a;
-        
-    }
+@keyframes mpris-fade {
+  to {
+    color: alpha(@fg, 0.3);
+  }
 }
 
+/* --- Indicators --- */
 #custom-screenrecording-indicator,
 #custom-dot-indicator,
 #custom-idle-indicator,
@@ -251,40 +188,36 @@ animation: repeat;
 
 #custom-screenrecording-indicator.active {
   color: #eb7087;
-  background-color: @bg;
-  animation-name: blink-recording;
-  animation-duration: 0.5s;
+  animation: blink-recording 0.5s infinite;
 }
 
 @keyframes blink-recording {
-    to {
-        color: @bg;
-    }
-}
-
-#battery.warning {
-  color: #c95d0f;
-   background-color: @bg;
-}
-
-@keyframes blink2 {
   to {
-    background-color: @bg;
-    color: #f53c3c;
+    color: transparent;
   }
 }
 
+/* --- Battery States --- */
+#battery.warning {
+  color: #c95d0f;
+}
+
 #battery.critical:not(.charging) {
-  background-color: @bg;
-  color: #e6d8ba;
-  animation-name: blink2;
-  animation-duration: 0.5s;
-  animation-timing-function: steps(12);
-  animation-iteration-count: infinite;
-  animation-direction: alternate;
+  color: #f53c3c;
+  animation: blink-critical 0.5s steps(12) infinite alternate;
+}
+
+@keyframes blink-critical {
+  to {
+    color: #e6d8ba;
+  }
 }
 
 #custom-idle-indicator.active,
 #custom-notification-silencing-indicator.active {
   color: #a55555;
+}
+
+.hidden {
+  opacity: 0;
 }

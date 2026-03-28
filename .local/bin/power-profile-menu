@@ -1,0 +1,11 @@
+#!/bin/bash
+
+profile=$(
+  powerprofilesctl list |
+    awk '/^\s*[* ]\s*[a-zA-Z0-9\-]+:$/ { gsub(/^[*[:space:]]+|:$/,""); print }' |
+    tac |
+    walker --dmenu --width 200 --minheight 1 --maxheight 200 -p "Power profile…" 2>/dev/null
+)
+
+[[ -z $profile ]] && exit 0
+powerprofilesctl set "$profile"

@@ -1,2 +1,9 @@
 uv
+uvx
 claude
+python3.13
+oterm
+*.bak
+*.bak.*
+.config/hypr/shaders/
+.config/mako/config

@@ -1,0 +1,11 @@
+#!/bin/bash
+
+CURRENT=$(hyprctl getoption "layout:single_window_aspect_ratio" 2>/dev/null | head -1)
+
+if [[ $CURRENT == *"[1, 1]"* ]]; then
+  hyprctl keyword layout:single_window_aspect_ratio "0 0"
+  notify-send "    Disable single-window square aspect ratio"
+else
+  hyprctl keyword layout:single_window_aspect_ratio "1 1"
+  notify-send "    Enable single-window square aspect"
+fi

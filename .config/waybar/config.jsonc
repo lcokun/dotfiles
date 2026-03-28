@@ -46,8 +46,7 @@
   "modules-center": [
     "clock",
     "custom/screenrecording-indicator",
-    "custom/dot-indicator",
-    "custom/update"
+    "custom/dot-indicator"
 ],
 
   "modules-right": ["group/right1", "group/right"],
@@ -90,17 +89,9 @@
   },
   "custom/omarchy": {
     "format": "omarchy",
-    "on-click": "omarchy-menu",
+    "on-click": "app-menu",
     "on-click-right": "xdg-terminal-exec",
-    "tooltip-format": "Omarchy Menu\n\nSuper + Alt + Space"
-  },
-  "custom/update": {
-    "format": "",
-    "exec": "omarchy-update-available",
-    "on-click": "omarchy-launch-floating-terminal-with-presentation omarchy-update",
-    "tooltip-format": "Omarchy update available",
-    "signal": 7,
-    "interval": 21600
+    "tooltip-format": "Menu\n\nSuper + Alt + Space"
   },
   "custom/updatespacman": {
     "format": "{}{icon}",
@@ -143,7 +134,7 @@
         "today": "<span color='#ff6699'><b>{}</b></span>",
       },
     },
-    "on-click-right": "omarchy-launch-floating-terminal-with-presentation omarchy-tz-select"
+    "on-click-right": "mode"
   },
  "power-profiles-daemon": {
     "format": "{icon}",
@@ -187,7 +178,7 @@
     "tooltip-format-discharging": "{power:>1.0f}W↓ {capacity}%\n {timeTo}",
     "tooltip-format-charging": "{power:>1.0f}W↑ {capacity}%\n {timeTo}",
     "interval": 5,
-    "on-click": "omarchy-menu power",
+    "on-click": "power-profile-menu",
     "states": {
       "warning": 20,
       "critical": 10
@@ -242,13 +233,13 @@
   },
   "custom/idle-indicator": {
     "on-click": "toggle-idle",
-    "exec": "$OMARCHY_PATH/default/waybar/indicators/idle.sh",
+    "exec": "idle-status",
     "signal": 9,
     "return-type": "json"
   },
   "custom/notification-silencing-indicator": {
     "on-click": "toggle-notifications",
-    "exec": "$OMARCHY_PATH/default/waybar/indicators/notification-silencing.sh",
+    "exec": "notification-status",
     "signal": 10,
     "return-type": "json"
   },
@@ -312,8 +303,8 @@
     "tooltip": true
   },
   "custom/screenrecording-indicator": {
-    "on-click": "omarchy-cmd-screenrecord",
-    "exec": "$OMARCHY_PATH/default/waybar/indicators/screen-recording.sh",
+    "on-click": "screenrecord",
+    "exec": "screenrecord-status",
     "signal": 8,
     "return-type": "json"
   },
