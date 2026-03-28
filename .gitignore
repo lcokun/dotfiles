@@ -7,3 +7,5 @@ oterm
 *.bak.*
 .config/hypr/shaders/
 .config/mako/config
+.config/alacritty/
+.config/ghostty/

@@ -9,7 +9,7 @@ Personal dotfiles for my Arch Linux + Hyprland setup, managed with [GNU Stow](ht
 | OS | Arch Linux ([Omarchy](https://github.com/basecamp/omarchy) base, heavily customized) |
 | WM | Hyprland 0.53+ |
 | Shell | fish |
-| Terminal | Ghostty (primary), Kitty, Alacritty |
+| Terminal | Kitty |
 | Bar | Waybar |
 | Launcher | Walker |
 | Prompt | Starship (pastel-powerline) |
@@ -21,7 +21,6 @@ Personal dotfiles for my Arch Linux + Hyprland setup, managed with [GNU Stow](ht
 ```
 dotfiles/
 ├── .config/
-│   ├── alacritty/       # Alacritty terminal config
 │   ├── fastfetch/       # Fastfetch system info config
 │   ├── fish/            # Fish shell config and functions
 │   ├── hypr/            # Hyprland WM configs (split by concern)
@@ -184,4 +183,5 @@ matugen-next   # cycle wallpapers
 
 - `~/.config/hypr/shaders/` is not tracked — shaders are symlinks to `/usr/share/aether/shaders/` (system-managed)
 - `~/.config/mako/config` is not tracked — it's a symlink to the active theme
+- `~/.config/alacritty/` and `~/.config/ghostty/` are not tracked — Kitty is the primary terminal
 - Binaries (`uv`, `uvx`, `claude`, `python3.13`) are gitignored even if present in `~/.local/bin/`
