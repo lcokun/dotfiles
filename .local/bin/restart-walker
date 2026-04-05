@@ -1,4 +1,4 @@
 #!/bin/bash
 pkill walker || true
 sleep 0.2
-uwsm-app -- walker --daemon &
+walker --daemon &

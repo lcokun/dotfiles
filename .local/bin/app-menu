@@ -37,7 +37,7 @@ close_windows() {
 
 restart_app() {
   pkill -x "$1" 2>/dev/null || true
-  setsid uwsm-app -- "$@" >/dev/null 2>&1 &
+  setsid "$@" >/dev/null 2>&1 &
 }
 
 hibernate_available() {
@@ -159,7 +159,7 @@ toggle_screensaver() {
 toggle_nightlight() {
   local on_temp=4000 off_temp=6000
   if ! pgrep -x hyprsunset >/dev/null; then
-    setsid uwsm-app -- hyprsunset &
+    setsid hyprsunset &
     sleep 1
   fi
   local current_temp
@@ -177,7 +177,7 @@ toggle_waybar() {
   if pgrep -x waybar >/dev/null; then
     pkill -x waybar
   else
-    setsid uwsm-app -- waybar >/dev/null 2>&1 &
+    setsid waybar >/dev/null 2>&1 &
   fi
 }
 
@@ -191,7 +191,7 @@ show_update_menu() {
   *Hardware*)        show_update_hardware_menu ;;
   *Firmware*)        run_in_terminal "fwupdmgr refresh --force && sudo fwupdmgr update" ;;
   *Timezone*)        run_in_terminal "timezone=\$(timedatectl list-timezones | gum filter --height 20 --header 'Set timezone') && sudo timedatectl set-timezone \"\$timezone\" && echo \"Timezone set to \$timezone\"" ;;
-  *Time*)            run_in_terminal "sudo systemctl restart systemd-timesyncd && echo 'Clock synced'" ;;
+  *Time*)            run_in_terminal "sudo rc-service ntpd restart && echo 'Clock synced'" ;;
   *Password*)        show_update_password_menu ;;
   *)                 show_main_menu ;;
   esac
@@ -210,9 +210,9 @@ show_update_process_menu() {
 
 show_update_hardware_menu() {
   case $(menu "Restart" "  Audio\n󱚾  Wi-Fi\n󰂯  Bluetooth") in
-  *Audio*)     run_in_terminal "systemctl --user restart pipewire pipewire-pulse wireplumber && echo 'Audio restarted'" ;;
-  *"Wi-Fi"*)   run_in_terminal "sudo systemctl restart iwd && echo 'Wi-Fi restarted'" ;;
-  *Bluetooth*) run_in_terminal "sudo systemctl restart bluetooth && echo 'Bluetooth restarted'" ;;
+  *Audio*)     run_in_terminal "pkill pipewire; sleep 0.5; pipewire & pipewire-pulse & wireplumber & echo 'Audio restarted'" ;;
+  *"Wi-Fi"*)   run_in_terminal "sudo rc-service NetworkManager restart && echo 'Wi-Fi restarted'" ;;
+  *Bluetooth*) run_in_terminal "sudo rc-service bluetooth restart && echo 'Bluetooth restarted'" ;;
   *)           back_to show_update_menu ;;
   esac
 }
@@ -237,21 +237,21 @@ show_system_menu() {
   options="$options\n󰍃  Logout\n󰜉  Restart\n󰐥  Shutdown"
 
   case $(menu "System" "$options") in
-  *Screensaver*) setsid uwsm-app -- screensaver force >/dev/null 2>&1 & ;;
+  *Screensaver*) setsid screensaver force >/dev/null 2>&1 & ;;
   *Lock*)        lock-screen ;;
-  *Suspend*)     systemctl suspend ;;
-  *Hibernate*)   systemctl hibernate ;;
+  *Suspend*)     loginctl suspend ;;
+  *Hibernate*)   loginctl hibernate ;;
   *Logout*)
     close_windows
-    nohup bash -c "sleep 2 && uwsm stop" >/dev/null 2>&1 &
+    nohup bash -c "sleep 2 && hyprctl dispatch exit" >/dev/null 2>&1 &
     ;;
   *Restart*)
     close_windows
-    nohup bash -c "sleep 2 && systemctl reboot --no-wall" >/dev/null 2>&1 &
+    nohup bash -c "sleep 2 && reboot" >/dev/null 2>&1 &
     ;;
   *Shutdown*)
     close_windows
-    nohup bash -c "sleep 2 && systemctl poweroff --no-wall" >/dev/null 2>&1 &
+    nohup bash -c "sleep 2 && poweroff" >/dev/null 2>&1 &
     ;;
   *) show_main_menu ;;
   esac
