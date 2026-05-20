@@ -1,0 +1,16 @@
+#!/bin/bash
+
+STATE_DIR="$HOME/.local/state/hypr"
+
+gaps_state=$(cat "$STATE_DIR/gaps" 2>/dev/null)
+if [[ "$gaps_state" == "off" ]]; then
+  hyprctl keyword general:gaps_out 0
+  hyprctl keyword general:gaps_in 0
+  hyprctl keyword general:border_size 0
+  hyprctl keyword decoration:rounding 0
+fi
+
+aspect_state=$(cat "$STATE_DIR/window-aspect" 2>/dev/null)
+if [[ "$aspect_state" == "on" ]]; then
+  hyprctl keyword layout:single_window_aspect_ratio "1 1"
+fi
