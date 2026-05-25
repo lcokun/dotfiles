@@ -1,0 +1,15 @@
+-- Hyprland 0.55+ Lua config (DRAFT)
+-- On 0.54.x this file is ignored. On 0.55+ it takes priority over hyprland.conf.
+
+require("colors")
+require("envs")
+require("monitors")
+require("input")
+require("looknfeel")
+require("autostart")
+require("windows")
+require("tiling")
+require("bindings")
+require("utilities")
+require("media")
+require("clipboard")
