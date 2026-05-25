@@ -7,7 +7,7 @@ Personal dotfiles for my Arch Linux + Hyprland setup, managed with [GNU Stow](ht
 | | |
 |---|---|
 | OS | Arch Linux ([Omarchy](https://github.com/basecamp/omarchy) base, heavily customized) |
-| WM | Hyprland 0.53+ |
+| WM | Hyprland 0.54+ |
 | Shell | fish |
 | Terminal | Kitty |
 | Bar | Waybar |
@@ -24,26 +24,31 @@ dotfiles/
 │   ├── fastfetch/       # Fastfetch system info config
 │   ├── fish/            # Fish shell config and functions
 │   ├── hypr/            # Hyprland WM configs (split by concern)
-│   │   ├── hyprland.conf    # Entry point, sources all others
-│   │   ├── apps.conf        # Per-app window rules
-│   │   ├── autostart.conf   # Autostart services
-│   │   ├── bindings.conf    # Application keybindings
-│   │   ├── clipboard.conf   # Clipboard manager bindings
-│   │   ├── envs.conf        # Environment variables
-│   │   ├── input.conf       # Keyboard/mouse/touchpad
-│   │   ├── looknfeel.conf   # Visuals, animations, blur
-│   │   ├── media.conf       # Media key bindings
-│   │   ├── monitors.conf    # Monitor layout
-│   │   ├── tiling.conf      # Tiling/layout bindings
-│   │   ├── utilities.conf   # Utility keybindings
-│   │   └── windows.conf     # Global window rules
+│   │   ├── hyprland.lua     # Entry point (0.55+ Lua config)
+│   │   ├── hyprland.conf    # Entry point (legacy, 0.54 and below)
+│   │   ├── apps.lua/conf    # Per-app window rules
+│   │   ├── autostart.lua/conf   # Autostart services
+│   │   ├── bindings.lua/conf    # Application keybindings
+│   │   ├── clipboard.lua/conf   # Clipboard manager bindings
+│   │   ├── colors.lua       # Color variables (Lua only)
+│   │   ├── envs.lua/conf    # Environment variables
+│   │   ├── input.lua/conf   # Keyboard/mouse/touchpad
+│   │   ├── looknfeel.lua/conf   # Visuals, animations, blur
+│   │   ├── media.lua/conf   # Media key bindings
+│   │   ├── monitors.lua/conf    # Monitor layout
+│   │   ├── tiling.lua/conf  # Tiling/layout bindings
+│   │   ├── utilities.lua/conf   # Utility keybindings
+│   │   ├── windows.lua/conf # Global window rules
+│   │   └── xdph.conf        # xdg-desktop-portal-hyprland settings
 │   ├── starship/        # Starship prompt config
 │   ├── uwsm/            # UWSM session manager (env, defaults)
 │   ├── walker/          # Walker app launcher config
 │   └── waybar/          # Waybar status bar config and styles
 └── .local/
-    └── bin/             # ~48 custom scripts
+    └── bin/             # ~50 custom scripts
 ```
+
+Each config area has a `.lua` file (active on Hyprland 0.55+) and a `.conf` file (active on 0.54 and below). On 0.55+, `hyprland.lua` takes priority and the `.conf` files are ignored.
 
 ## Scripts (`~/.local/bin/`)
 
@@ -70,13 +75,14 @@ dotfiles/
 | `audio-switch` | Cycle audio output devices |
 | `battery-status` | Battery notification (%, rate, time remaining) |
 | `battery-monitor` | Background battery level notifier |
+| `capture-text` | OCR text capture — select area, copy text to clipboard |
 | `lock-screen` | Lock screen via hyprlock |
 | `power-profile-menu` | Switch power profiles via Walker |
 | `screenshot` | Screenshot tool |
 | `screenrecord` | Screen recording |
 | `screenrecord-status` | Check if recording is active |
 | `share` | File sharing menu |
-| `system-update` | System update (snapper snapshot + pacman + yay) |
+| `system-update` | System update (pacman + paru AUR + orphan cleanup) |
 | `terminal-cwd` | Get CWD of focused terminal (for new window spawning) |
 
 ### Toggles
@@ -93,6 +99,7 @@ dotfiles/
 | Script | Purpose |
 |---|---|
 | `cycle-display-scale` | Cycle monitor scale factors |
+| `restore-hypr-toggles` | Restore toggle states (gaps, aspect ratio) on session start |
 | `window-close-all` | Close all windows on current workspace |
 | `window-pop` | Pop focused window to/from scratchpad |
 
@@ -114,10 +121,12 @@ dotfiles/
 | Script | Purpose |
 |---|---|
 | `keybindings-viewer` | Browse all Hyprland keybindings in Walker |
+| `lutris` | Python shim for Lutris (launch fix) |
 | `manga` | Mirror Android phone screen via scrcpy over SSH |
 | `screensaver` | Screensaver runner |
 | `launch-screensaver` | Launch screensaver window |
 | `restart-walker` | Restart Walker launcher |
+| `virt-manager` | Python shim for virt-manager (launch fix) |
 
 ## Setup
 
@@ -170,14 +179,16 @@ stow -D -t ~ .          # Remove all symlinks
 
 ## Theming
 
-Themes live in `~/.config/omarchy/themes/<name>/`. The active theme is output to `~/.config/omarchy/current/theme/` and sourced by Hyprland, Waybar, etc.
+Dynamic theming via [matugen](https://github.com/InioX/matugen) — generates a full palette from a wallpaper image or hex color and applies it across all apps.
 
 Switch themes:
 ```bash
 matugen-theme image ~/Pictures/walls/dark/001.jpg
 matugen-theme color "#8673d4"
-matugen-next   # cycle wallpapers
+matugen-next   # cycle wallpapers and regenerate palette
 ```
+
+Static themes (NieR: Automata, synthwave, etc.) live in `~/.config/omarchy/themes/<name>/`.
 
 ## Notes
 
