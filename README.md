@@ -24,21 +24,23 @@ dotfiles/
 │   ├── fastfetch/       # Fastfetch system info config
 │   ├── fish/            # Fish shell config and functions
 │   ├── hypr/            # Hyprland WM configs (split by concern)
-│   │   ├── hyprland.lua     # Entry point (0.55+ Lua config)
-│   │   ├── hyprland.conf    # Entry point (legacy, 0.54 and below)
-│   │   ├── apps.lua/conf    # Per-app window rules
-│   │   ├── autostart.lua/conf   # Autostart services
-│   │   ├── bindings.lua/conf    # Application keybindings
-│   │   ├── clipboard.lua/conf   # Clipboard manager bindings
-│   │   ├── colors.lua       # Color variables (Lua only)
-│   │   ├── envs.lua/conf    # Environment variables
-│   │   ├── input.lua/conf   # Keyboard/mouse/touchpad
-│   │   ├── looknfeel.lua/conf   # Visuals, animations, blur
-│   │   ├── media.lua/conf   # Media key bindings
-│   │   ├── monitors.lua/conf    # Monitor layout
-│   │   ├── tiling.lua/conf  # Tiling/layout bindings
-│   │   ├── utilities.lua/conf   # Utility keybindings
-│   │   ├── windows.lua/conf # Global window rules
+│   │   ├── hyprland.lua     # Entry point, requires the modules below
+│   │   ├── apps.lua         # Per-app window rules
+│   │   ├── autostart.lua    # Autostart services
+│   │   ├── bindings.lua     # Application keybindings
+│   │   ├── clipboard.lua    # Clipboard manager bindings
+│   │   ├── colors.lua       # Border colors, parsed from the matugen theme
+│   │   ├── envs.lua         # Environment variables
+│   │   ├── input.lua        # Keyboard/mouse/touchpad
+│   │   ├── looknfeel.lua    # Visuals, animations, blur
+│   │   ├── media.lua        # Media key bindings
+│   │   ├── monitors.lua     # Monitor layout
+│   │   ├── tiling.lua       # Tiling/layout bindings
+│   │   ├── utilities.lua    # Utility keybindings
+│   │   ├── windows.lua      # Global window rules
+│   │   ├── hypridle.conf    # hypridle (idle timeouts)
+│   │   ├── hyprlock.conf    # hyprlock (lock screen)
+│   │   ├── hyprsunset.conf  # hyprsunset (night light)
 │   │   └── xdph.conf        # xdg-desktop-portal-hyprland settings
 │   ├── starship/        # Starship prompt config
 │   ├── uwsm/            # UWSM session manager (env, defaults)
@@ -48,7 +50,7 @@ dotfiles/
     └── bin/             # ~50 custom scripts
 ```
 
-Each config area has a `.lua` file (active on Hyprland 0.55+) and a `.conf` file (active on 0.54 and below). On 0.55+, `hyprland.lua` takes priority and the `.conf` files are ignored.
+Hyprland is configured entirely in Lua (0.55+), with `hyprland.lua` as the entry point. The remaining `.conf` files are not read by Hyprland at all — `hypridle`, `hyprlock`, `hyprsunset` and `xdg-desktop-portal-hyprland` each read their own.
 
 ## Scripts (`~/.local/bin/`)
 
@@ -192,7 +194,7 @@ Static themes (NieR: Automata, synthwave, etc.) live in `~/.config/omarchy/theme
 
 ## Notes
 
-- `~/.config/hypr/shaders/` is not tracked — shaders are symlinks to `/usr/share/aether/shaders/` (system-managed)
+- `~/.config/hypr/shaders/` is not tracked — it held symlinks into `/usr/share/aether/shaders/`, which the `aether` package no longer ships
 - `~/.config/mako/config` is not tracked — it's a symlink to the active theme
 - `~/.config/alacritty/` and `~/.config/ghostty/` are not tracked — Kitty is the primary terminal
 - Binaries (`uv`, `uvx`, `claude`, `python3.13`) are gitignored even if present in `~/.local/bin/`
