@@ -26,7 +26,7 @@ sudo pacman -Syyu --noconfirm
 # AUR packages
 if pacman -Qem >/dev/null 2>&1; then
   echo -e "\e[32m\nUpdating AUR packages\e[0m"
-  yay -Sua --noconfirm --cleanafter
+  paru -Sua --cleanafter
 fi
 
 # Orphans
