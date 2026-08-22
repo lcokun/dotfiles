@@ -59,6 +59,7 @@
    "group/right": {
     "orientation": "inherit",
     "modules": [
+    "network",
     "pulseaudio",
     "memory",
     "cpu",
@@ -155,13 +156,13 @@
       "󰤨"
     ],
     "format": "{icon}",
-    "format-wifi": "{icon}",
-    "format-ethernet": "󰈀",
+    "format-wifi": "{icon}  ⇣ {bandwidthDownBits}  ⇡ {bandwidthUpBits}",
+    "format-ethernet": "󰈀  ⇣ {bandwidthDownBits}  ⇡ {bandwidthUpBits}",
     "format-disconnected": "󰤮",
     "tooltip-format-wifi": "{essid} ({frequency} GHz)\n⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
-    "tooltip-format-ethernet": "⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
+    "tooltip-format-ethernet": "{ifname}: {ipaddr}/{cidr}\n⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
     "tooltip-format-disconnected": "Disconnected",
-    "interval": 3,
+    "interval": 2,
     "spacing": 1,
     "on-click": "launch-wifi"
   },
@@ -259,8 +260,7 @@
     "pulseaudio#icon",
     "backlight",
     "bluetooth",
-    "power-profiles-daemon",
-    "network"
+    "power-profiles-daemon"
     ]
   },
   "custom/expand-icon2": {
