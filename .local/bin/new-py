@@ -1,0 +1,72 @@
+#!/bin/bash
+# Scaffold a Python project with verification wired up before the first line of code.
+# Adds the [tool.ruff] block that lint-changed-file.sh and /ship's verify step depend on,
+# and makes a scaffold commit so autofixes are always revertible.
+# Usage: new-py <name> [parent-dir]
+set -euo pipefail
+
+NAME="${1:-}"
+PARENT="${2:-$PWD}"
+
+if [[ -z "$NAME" ]]; then
+  echo "usage: new-py <name> [parent-dir]" >&2
+  exit 1
+fi
+
+command -v uv >/dev/null || { echo "new-py: uv not found" >&2; exit 1; }
+
+TARGET="$PARENT/$NAME"
+[[ -e "$TARGET" ]] && { echo "new-py: $TARGET already exists" >&2; exit 1; }
+
+uv init --app --vcs git "$TARGET"
+cd "$TARGET"
+TARGET="$PWD"
+
+cat >> pyproject.toml <<'EOF'
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "PTH"]
+EOF
+
+cat > CLAUDE.md <<EOF
+# $NAME
+
+## What this is
+<one line — replace me>
+
+## Status
+scaffolded $(date +%Y-%m-%d), nothing built yet
+
+## Constraints
+-
+EOF
+
+# Prove the lint lane actually works before any code exists.
+echo
+if uvx ruff check . >/dev/null 2>&1; then
+  RUFF="clean"
+else
+  RUFF="findings present — run 'uvx ruff check .'"
+fi
+
+TOPLEVEL=$(git -C "$TARGET" rev-parse --show-toplevel 2>/dev/null || true)
+if [[ "$TOPLEVEL" != "$TARGET" ]]; then
+  echo "new-py: WARNING — $TARGET sits inside the git repo at ${TOPLEVEL:-<none>}."
+  echo "        Skipped the scaffold commit so the parent repo isn't polluted."
+  COMMIT="skipped (nested repo)"
+else
+  git add -A
+  git commit -qm "chore: scaffold $NAME with ruff config"
+  COMMIT="made"
+fi
+
+cat <<EOF
+new-py: $TARGET ready
+  ruff config   -> lint hook + /ship verify are live for this repo
+  ruff status   -> $RUFF
+  first commit  -> $COMMIT
+  next          -> fill in CLAUDE.md, then /plan-it
+EOF
