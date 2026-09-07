@@ -287,7 +287,8 @@
     "max-length": 75,
     "player-icons": {
       "default": "⏸",
-      "mpv": "🎵"
+      "mpv": "🎵",
+      "ytm": "🎵"
     },
     "status-icons": {
       "paused": "󰝛"
