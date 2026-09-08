@@ -1,0 +1,41 @@
+[config]
+
+[templates.ghostty]
+input_path  = "~/.config/matugen/templates/ghostty.conf"
+output_path = "~/.config/omarchy/themes/matugen/ghostty.conf"
+
+[templates.kitty]
+input_path  = "~/.config/matugen/templates/kitty.conf"
+output_path = "~/.config/omarchy/themes/matugen/kitty.conf"
+
+[templates.alacritty]
+input_path  = "~/.config/matugen/templates/alacritty.toml"
+output_path = "~/.config/omarchy/themes/matugen/alacritty.toml"
+
+[templates.waybar]
+input_path  = "~/.config/matugen/templates/waybar.css"
+output_path = "~/.config/omarchy/themes/matugen/waybar.css"
+
+[templates.hyprland]
+input_path  = "~/.config/matugen/templates/hyprland.conf"
+output_path = "~/.config/omarchy/themes/matugen/hyprland.conf"
+
+[templates.mako]
+input_path  = "~/.config/matugen/templates/mako.ini"
+output_path = "~/.config/omarchy/themes/matugen/mako.ini"
+
+[templates.walker]
+input_path  = "~/.config/matugen/templates/walker.css"
+output_path = "~/.config/omarchy/themes/matugen/walker.css"
+
+[templates.hyprlock]
+input_path  = "~/.config/matugen/templates/hyprlock.conf"
+output_path = "~/.config/omarchy/themes/matugen/hyprlock.conf"
+
+[templates.ytmusic]
+input_path  = "~/.config/matugen/templates/ytmusic.css"
+output_path = "~/.config/ytmusic/theme.css"
+
+[templates.ytm-cli]
+input_path  = "~/.config/matugen/templates/ytm-cli.tcss"
+output_path = "~/.config/ytm-cli/tui.tcss"

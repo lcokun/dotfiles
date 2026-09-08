@@ -42,6 +42,9 @@ dotfiles/
 │   │   ├── hyprlock.conf    # hyprlock (lock screen)
 │   │   ├── hyprsunset.conf  # hyprsunset (night light)
 │   │   └── xdph.conf        # xdg-desktop-portal-hyprland settings
+│   ├── matugen/         # Dynamic theming source (see Theming below)
+│   │   ├── config.toml      # Which templates render, and where they land
+│   │   └── templates/       # One per themed app; the generated output is ignored
 │   ├── starship/        # Starship prompt config
 │   ├── uwsm/            # UWSM session manager (env, defaults)
 │   ├── walker/          # Walker app launcher config
