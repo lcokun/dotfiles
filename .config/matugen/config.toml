@@ -39,3 +39,7 @@ output_path = "~/.config/ytmusic/theme.css"
 [templates.ytm-cli]
 input_path  = "~/.config/matugen/templates/ytm-cli.tcss"
 output_path = "~/.config/ytm-cli/tui.tcss"
+
+[templates.zed]
+input_path  = "~/.config/matugen/templates/zed.json"
+output_path = "~/.config/zed/themes/matugen.json"
