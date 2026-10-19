@@ -41,4 +41,13 @@ html:root body {
     --lyrics-color-inactive: {{colors.outline.default.hex}} !important;
     --lyrics-color-light-inactive: {{colors.on_surface_variant.default.hex}} !important;
     --visualizer-color: {{colors.primary.default.hex}} !important;
+
+    /* Targets for matugen.js, which rewrites SpoTUI's hardcoded colours */
+    --mg-bg: {{colors.background.default.hex}};
+    --mg-surface-high: {{colors.surface_container_high.default.hex}};
+    --mg-text: {{colors.on_surface.default.hex}};
+    --mg-subtext: {{colors.on_surface_variant.default.hex}};
+    --mg-outline: {{colors.outline.default.hex}};
+    --mg-accent: {{colors.primary.default.hex}};
+    --mg-error: {{colors.error.default.hex}};
 }
