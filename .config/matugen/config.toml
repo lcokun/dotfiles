@@ -43,3 +43,7 @@ output_path = "~/.config/ytm-cli/tui.tcss"
 [templates.zed]
 input_path  = "~/.config/matugen/templates/zed.json"
 output_path = "~/.config/zed/themes/matugen.json"
+
+[templates.spicetify]
+input_path  = "~/.config/matugen/templates/spicetify.css"
+output_path = "~/.config/spicetify/matugen/colors.css"

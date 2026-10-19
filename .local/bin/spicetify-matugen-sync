@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# Publishes the matugen Spotify palette + current wallpaper into Spotify's
+# xpui dir, where the spicetify matugen.js extension hot-reloads them.
+# Run by matugen-theme; rerun by hand after `spicetify backup apply`.
+
+set -e
+
+COLORS="$HOME/.config/spicetify/matugen/colors.css"
+WALLPAPER="$HOME/.config/omarchy/current/background"
+XPUI_DIR="/opt/spotify/Apps/xpui"
+OUT_DIR="$XPUI_DIR/matugen"
+
+if [[ ! -w "$XPUI_DIR" ]]; then
+    echo "spicetify-matugen-sync: $XPUI_DIR not writable (Spotify update reset perms?)" >&2
+    exit 1
+fi
+if [[ ! -f "$COLORS" ]]; then
+    echo "spicetify-matugen-sync: $COLORS missing, run matugen-theme first" >&2
+    exit 1
+fi
+
+mkdir -p "$OUT_DIR"
+STAMP=$(date +%s%N)
+WALL_SRC=$(realpath "$WALLPAPER")
+WALL_NAME="wallpaper.${WALL_SRC##*.}"
+
+rm -f "$OUT_DIR"/wallpaper.*
+cp "$WALL_SRC" "$OUT_DIR/$WALL_NAME"
+{
+    cat "$COLORS"
+    printf '\n#spotui-wallpaper { background-image: url("%s?v=%s") !important; }\n' "$WALL_NAME" "$STAMP"
+} > "$OUT_DIR/theme.css"
+# Written last: the extension reloads when this changes
+echo "$STAMP" > "$OUT_DIR/version"

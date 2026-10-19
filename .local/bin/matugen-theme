@@ -49,3 +49,4 @@ killall -SIGUSR1 kitty 2>/dev/null || true
 [[ -f "$HOME/.config/alacritty/alacritty.toml" ]] && touch "$HOME/.config/alacritty/alacritty.toml"
 pkill -x waybar 2>/dev/null || true; setsid uwsm-app -- waybar >/dev/null 2>&1 &
 pkill -x swayosd-server 2>/dev/null || true; setsid uwsm-app -- swayosd-server >/dev/null 2>&1 &
+spicetify-matugen-sync || echo "matugen-theme: Spotify not themed (see above)" >&2
