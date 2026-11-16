@@ -14,3 +14,7 @@ alias cat bat
 alias ls eza
 alias ll 'eza -la'
 alias lt 'eza --tree'
+
+
+# Added by Antigravity CLI installer
+set -gx PATH "/home/mel/.local/bin" $PATH

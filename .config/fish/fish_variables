@@ -1,4 +1,6 @@
 # This file contains fish universal variable definitions.
 # VERSION: 3.0
 SETUVAR ENDFIELDDIR:/home/mel/\x2esteam/steam/steamapps/compatdata/3086181712/pfx/drive_c/Program\x20Files/GRYPHLINK/games/EndField\x20Game
+SETUVAR --export --path PKG_CONFIG_PATH:/home/mel/\x2elocal/lib/pkgconfig
 SETUVAR __fish_initialized:4300
+SETUVAR fish_user_paths:/home/mel/go/bin
