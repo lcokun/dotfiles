@@ -23,10 +23,36 @@ fi
 echo -e "\e[32m\nUpdating system packages\e[0m"
 sudo pacman -Syyu --noconfirm
 
+# Print AUR upgrades that pin an exact repo version (dep=ver) the repo doesn't have yet.
+# The omarchy snapshot mirror lags Arch by weeks, so AUR lib32-* bumps outrun it.
+unsatisfiable_aur_upgrades() {
+  local pending
+  mapfile -t pending < <(paru -Qua 2>/dev/null | awk '{print $1}')
+  ((${#pending[@]})) || return 0
+
+  paru -Si --aur "${pending[@]}" 2>/dev/null | awk '
+    /^Name/       { name = $3 }
+    /^Depends On/ { sub(/^Depends On *: */, ""); n = split($0, deps, /  +/)
+                    for (i = 1; i <= n; i++) if (deps[i] ~ /^[^<>]+=[^=]+$/) print name, deps[i] }
+  ' | while read -r pkg pin; do
+    local dep=${pin%%=*} wanted=${pin#*=} available
+    available=$(pacman -Si "$dep" 2>/dev/null | awk '/^Version/ {print $3; exit}') || true
+    [[ -z $available ]] && continue  # not a repo package (e.g. another AUR upgrade)
+    [[ $wanted != *-* ]] && available=${available%-*}
+    [[ $available == "$wanted" ]] || echo "$pkg $dep $wanted ${available}"
+  done
+}
+
 # AUR packages
 if pacman -Qem >/dev/null 2>&1; then
   echo -e "\e[32m\nUpdating AUR packages\e[0m"
-  paru -Sua --cleanafter
+  skip=()
+  while read -r pkg dep wanted available; do
+    echo -e "\e[33mSkipping $pkg: needs $dep=$wanted, repo has $available (mirror behind)\e[0m"
+    skip+=("$pkg")
+  done < <(unsatisfiable_aur_upgrades)
+  ignore_list=$(IFS=,; echo "${skip[*]}")
+  paru -Sua --cleanafter ${ignore_list:+--ignore "$ignore_list"}
 fi
 
 # Orphans
