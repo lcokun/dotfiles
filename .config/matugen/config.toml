@@ -1,5 +1,14 @@
 [config]
 
+# Extra hues for syntax highlighting and terminal ANSI; matugen harmonizes them toward the seed.
+# Exposed as {{colors.<name>.default.hex}}. Used by vscodium.json, zed.json and kitty.conf.
+[config.custom_colors]
+green  = "#50c878"
+orange = "#e8913a"
+blue   = "#4f8fdf"
+cyan   = "#3fb8c0"
+yellow = "#e5c33a"
+
 [templates.ghostty]
 input_path  = "~/.config/matugen/templates/ghostty.conf"
 output_path = "~/.config/omarchy/themes/matugen/ghostty.conf"
@@ -47,3 +56,7 @@ output_path = "~/.config/zed/themes/matugen.json"
 [templates.spicetify]
 input_path  = "~/.config/matugen/templates/spicetify.css"
 output_path = "~/.config/spicetify/matugen/colors.css"
+
+[templates.vscodium]
+input_path  = "~/.config/matugen/templates/vscodium.json"
+output_path = "~/.vscode-oss/extensions/local.matugen-theme-0.0.1/themes/matugen.json"
